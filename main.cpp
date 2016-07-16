@@ -8,13 +8,6 @@
 #define MAGIC_NUM       22/20 // 22 cm per 20 pulse
 using namespace std;
 
-int counter1 = 0;
-int counter2 = 0;
-
-
-
-void encoderCallback1();
-void encoderCallback2();
 void *getInstruction(void *arg);
 void *driveCar(void *arg);
 void *demo();
@@ -44,29 +37,45 @@ int main()
             gpioSleep(PI_TIME_RELATIVE,0,10000);
         }*/
 
-    Encoder *leftEncoder = new Encoder(21,encoderCallback1);
-    Encoder *rightEncoder = new Encoder(18,encoderCallback2);
+    Encoder *leftEncoder = new Encoder(21);
+    Encoder *rightEncoder = new Encoder(18);
 
+    int counter1 = 0;
+    int counter2 = 0;
 
     Car *car = new Car();
 
-    for(int i=0; i<3; i++)
+    for(int i=0; i<30; i++)
     {
-
+        counter1 = 0;
+        counter2 = 0;
         car->moveBackward(Low);
-        while (counter1 < 20);
+        while (counter1 < 20 && counter2 < 20)
+        {
+            counter1 = leftEncoder->getPulse();
+            counter2 = rightEncoder->getPulse();
+        }
         car->stop(true);
-        gpioDelay(2000000);
+        gpioDelay(1000000);
 
+        counter1 = 0;
+        counter2 = 0;
+        leftEncoder->resetPulse();
+        rightEncoder->resetPulse();
 
         car->moveForward(Low);
-        while (counter1 < 20);
+
+        while (counter1 < 20 && counter2 < 20)
+        {
+            counter1 = leftEncoder->getPulse();
+            counter2 = rightEncoder->getPulse();
+        }
         car->stop(true);
 
         cout << counter1 << endl;
         cout << counter2 << endl;
-        counter1 = 0;
-        gpioDelay(2000000);
+
+        gpioDelay(1000000);
 
 
 }
@@ -89,16 +98,6 @@ int main()
     gpioTerminate();
 
     return 0;
-}
-
-void encoderCallback1()
-{
-    ++counter1;
-}
-
-void encoderCallback2()
-{
-    ++counter2;
 }
 
 void * getInstruction(void *arg)

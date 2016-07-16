@@ -1,31 +1,38 @@
 #include "encoder.h"
-Encoder::Encoder() {}
-Encoder::Encoder(int gpio, encoderCB_t callback)
+Encoder::Encoder(int gpio)
 {
-    _pin = gpio;
-    _callback = callback;
-    gpioSetMode(_pin,PI_INPUT);
-    gpioGlitchFilter(_pin,STEADY_MICROS);
-    gpioSetAlertFuncEx(_pin, pulseEx,this);
+    _gpio = gpio;
+    gpioSetMode(_gpio, PI_INPUT);
+
+    // debounce input signal
+    gpioGlitchFilter(_gpio, STEADY_MICROS);
+
+    // register function to be called when input pin change state
+    gpioSetAlertFuncEx(_gpio, _pulseEx, this);
 }
 
 Encoder::~Encoder()
 {
-    _callback = NULL;
-    gpioSetAlertFunc(_pin, NULL);
+    gpioSetAlertFunc(_gpio, NULL);
 }
 
-void Encoder::pulse(int gpio, int level, uint32_t tick)
+int Encoder::getPulse()
 {
-    _callback();
+    return _pulse;
 }
 
-void Encoder::pulseEx(int gpio, int level, uint32_t tick, void *data)
+void Encoder::resetPulse()
+{
+    _pulse = 0;
+}
+
+void Encoder::_pulseEx(int gpio, int level, uint32_t tick, void *data)
 {
     if (level == TRIGGER_LEVEL)
     {
-        Encoder *me = (Encoder*) data;
-        me->pulse(gpio, level, tick);
+        Encoder* me = (Encoder*) data;
+        me->_pulse++;
     }
 }
+
 
