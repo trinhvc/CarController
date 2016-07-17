@@ -1,10 +1,12 @@
 #pragma once
-#include<cstddef>
-#include<string>
+#include <cstddef>
+#include <string>
+#include "instruction.h";
 using namespace std;
 class Node
 {
     private:
+    //Instruction _instruction;
         string _text;
         Node* _nextNode;
     public:

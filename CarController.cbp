@@ -39,6 +39,8 @@
 		<Unit filename="car.h" />
 		<Unit filename="encoder.cpp" />
 		<Unit filename="encoder.h" />
+		<Unit filename="instruction.cpp" />
+		<Unit filename="instruction.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="main.h" />
 		<Unit filename="motor.cpp" />

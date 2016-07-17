@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1468638962 source:/home/pi/Desktop/CarController/main.cpp
+1468732835 source:/home/pi/Desktop/CarController/main.cpp
 	<iostream>
 	"main.h"
 	"queue.h"
@@ -11,7 +11,7 @@
 	<cstddef>
 	"node.h"
 
-1468489700 /home/pi/Desktop/CarController/motor.h
+1468722289 /home/pi/Desktop/CarController/motor.h
 	<pigpio.h>
 	"mapping.h"
 
@@ -23,7 +23,7 @@
 	"queue.h"
 	<string>
 
-1468309775 source:/home/pi/Desktop/CarController/car.cpp
+1468663254 source:/home/pi/Desktop/CarController/car.cpp
 	"car.h"
 
 1468638981 source:/home/pi/Desktop/CarController/encoder.cpp
@@ -35,22 +35,29 @@
 
 1468142340 /home/pi/Desktop/CarController/main.h
 
-1468491077 source:/home/pi/Desktop/CarController/motor.cpp
+1468722302 source:/home/pi/Desktop/CarController/motor.cpp
 	"motor.h"
 
-1468640354 /home/pi/Desktop/CarController/car.h
+1468722257 /home/pi/Desktop/CarController/car.h
 	"mapping.h"
 	"motor.h"
 
 1468485101 source:/home/pi/Desktop/CarController/serial.cpp
 	"serial.h"
 
-1468466659 /home/pi/Desktop/CarController/node.h
+1468732071 /home/pi/Desktop/CarController/node.h
 	<cstddef>
 	<string>
+	"instruction.h"
 
 1468466140 source:/home/pi/Desktop/CarController/node.cpp
 	"node.h"
 
 1468467215 /home/pi/Desktop/CarController/mapping.h
+
+1468727841 source:/home/pi/Desktop/CarController/instruction.cpp
+	"instruction.h"
+
+1468727855 /home/pi/Desktop/CarController/instruction.h
+	<string>
 

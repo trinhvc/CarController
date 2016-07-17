@@ -24,10 +24,16 @@ void Car::turnRight()
     _rightMotor->forward(SPEED_1);
 }
 
-void Car::turnAround()
+void Car::rotateLeft()
 {
     _leftMotor ->reverse(SPEED_1);
     _rightMotor->forward(SPEED_1);
+}
+
+void Car::rotateRight()
+{
+    _leftMotor ->forward(SPEED_1);
+    _rightMotor->reverse(SPEED_1);
 }
 
 void Car::moveForward(CarSpeed speed)
@@ -37,16 +43,7 @@ void Car::moveForward(CarSpeed speed)
         _leftMotor ->forward(SPEED_1);
         _rightMotor->forward(SPEED_1);
     }
-    else if (speed == Medium)
-    {
-        _leftMotor ->forward(SPEED_2);
-        _rightMotor->forward(SPEED_2);
-    }
-    else if (speed == High)
-    {
-        _leftMotor ->forward(SPEED_3);
-        _rightMotor->forward(SPEED_3);
-    }
+
 }
 
 void Car::moveBackward(CarSpeed speed)

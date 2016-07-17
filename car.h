@@ -20,6 +20,9 @@ class Car
         void turnRight();
         void turnAround();
 
+        void rotateLeft();
+        void rotateRight();
+
         void moveForward(CarSpeed speed);
         void moveBackward(CarSpeed speed);
         void stop(bool force);
