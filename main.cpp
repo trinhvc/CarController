@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include "main.h"
 #include "queue.h"
 #include "serial.h"
@@ -55,11 +56,13 @@ int main()
             // parse instruction
             if  (!message.empty())
             {
-                int id;
+                int id = -1;
                 string action;
-                int distance;
-                int speed;
+                int distance = -1;
+                int speed = -1;
 
+                istringstream ss(message);
+                ss >> id >> action >> distance >> speed;
 
                 //Instruction ins(id,action,distance,speed);
                 cout<< message << endl;

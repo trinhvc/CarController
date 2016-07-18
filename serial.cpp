@@ -1,6 +1,6 @@
 #include "serial.h"
-
-
+#include <iostream>
+using namespace std;
 Serial::Serial(char* device, int baudrate)
 {
     handle = serOpen(device, baudrate, 0);
@@ -17,6 +17,7 @@ Serial::~Serial()
 int Serial::readByte()
 {
     int result = serReadByte(handle);
+    cout << "handle: " << handle << " char: " << result<< endl;
     return result;
 }
 
