@@ -28,11 +28,8 @@ void Encoder::resetPulse()
 
 void Encoder::_pulseEx(int gpio, int level, uint32_t tick, void *data)
 {
-    if (level == TRIGGER_LEVEL)
-    {
         Encoder* me = (Encoder*) data;
         me->_pulse++;
-    }
 }
 
 

@@ -1,5 +1,6 @@
 #include "instruction.h"
 
+
 void Instruction::setSpeed(int speed)
 {
     _speed = speed;
@@ -40,10 +41,6 @@ int Instruction::getID()
     return _id;
 }
 
- Instruction::~Instruction()
-{
-    _action.clear();
-}
 
  Instruction::Instruction(int id, string action,int distance, int speed)
 {

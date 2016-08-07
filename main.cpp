@@ -1,78 +1,100 @@
 #include <iostream>
 #include <sstream>
+#include <queue>
+#include <unistd.h>
 #include "main.h"
-#include "queue.h"
+//#include "queue.h"
 #include "serial.h"
 #include "car.h"
+//#include "enhan"
 #include "encoder.h"
+#include "instruction.h"
 //#include "sonar.h"
 #define MAGIC_NUM       22/20 // 22 cm per 20 pulse
 using namespace std;
 
 void *driveCar(void *arg);
-void *demo();
 
 int main()
 {
-    //gpioCfgClock(1,PI_DEFAULT_CLK_PERIPHERAL,0);
-    gpioInitialise();
-    Queue* ins = new Queue();
-    Serial* serial = new Serial("/dev/ttyAMA0",9600);
-    pthread_t p1,p2;
-    gpioStartThread(driveCar,ins);
-
-
-    while (true)
+    if (gpioInitialise() >= 0)
     {
-        static string message;
-        static string instructionStr;
-        static char readChar;
-        static bool accepted = false;
+        Serial serial("/dev/ttyAMA0",9600);
+        queue<Instruction> cmdQueue;
+        pthread_t t1;
+        pthread_create(&t1,NULL,&driveCar,&cmdQueue);
 
-        if (serial->getDataAvailable()>0)
+        while (true)
         {
-            readChar = serial->readByte();
-            cout << readChar << endl;
-            // reassemble an instruction;
-            if (readChar == '[')
+            static string message;
+            static string instruction;
+
+            if (serial.getDataAvailable()>0)
             {
-                accepted = true;
-                // handle error
-            }
-            else if (readChar == ']')
-            {
-                accepted = false;
-                instructionStr = message;
-                message.clear();
-            }
-            else
-            {
-                if (accepted == true)
+                static bool accepted = false;
+                char readChar = (char) serial.readByte();
+                cout << readChar << endl;
+                if (accepted)
                 {
-                    message+=readChar;
+                    if (readChar == ']')
+                    {
+                        accepted = false;
+                        instruction = message;
+                        cout << message << endl;
+                        cout << &cmdQueue << endl;
+                        message.clear();
+                    }
+                    else if (readChar == ',')
+                    {
+                        message += ' ';
+                    }
+                    else
+                    {
+                        message += readChar;
+                    }
+                }
+                else
+                {
+                    if (readChar == '[')
+                    {
+                        accepted = true;
+                    }
+                }
+
+                // parse instruction
+                if  (!instruction.empty())
+                {
+                cout << instruction << endl;
+                    int id = -1;
+                    string action;
+                    int distance = -1;
+                    int speed = -1;
+                    bool error = false;
+
+                    istringstream ss(instruction);
+                    ss >> id >> action >> distance >> speed;
+
+                    if (id == -1 || distance == -1 ||speed == -1 || action.empty())
+                    {
+                        error = true;
+                    }
+
+
+
+                    if (!error)
+                    {
+                        Instruction ins(id, action, distance, speed);
+                        serial.sendByte(id);
+                        cmdQueue.push(ins);
+
+                        //instructions.enqueue(ins);
+                    }
+                    instruction.clear();
                 }
             }
 
-            // parse instruction
-            if  (!message.empty())
-            {
-                int id = -1;
-                string action;
-                int distance = -1;
-                int speed = -1;
-
-                istringstream ss(message);
-                ss >> id >> action >> distance >> speed;
-
-                //Instruction ins(id,action,distance,speed);
-                cout<< message << endl;
-                message.clear();
-            }
+            usleep(1000); // 1ms
         }
-
-        gpioSleep(PI_TIME_RELATIVE,0,10000);
-    }
-    string s = "[1,ahead,0,0]";
 
 
 //gpioDelay(1000000*10)
@@ -80,18 +102,54 @@ int main()
 //cout << encoder2->getCount() << endl;
 
 
-    delete serial;
-    delete ins;
-    gpioTerminate();
 
+        cout << "main thread end" << endl;
+    }
+    gpioTerminate();
     return 0;
 }
 
-void *driveCar(void *arg)
+void* driveCar(void* arg)
 {
-    Queue* instructions = (Queue*) arg;
-    Car car;
-    string ins = instructions->dequeue();
-    cout << ins << endl;
-    gpioSleep(PI_TIME_RELATIVE,0,1000);
+    queue<Instruction>* cmdQueue = (queue<Instruction>*) arg;
+    //queue<Instruction>* instructions = (queue<Instruction>*) arg;
+    if (cmdQueue!=NULL)
+    {
+
+        //queue<Instruction> cmdQueue = *ptrQueue;
+        cout << &cmdQueue << endl;
+        Car car;
+        //queue<Instruction> cmdQueue = *instructions;
+        cout << "thread started" << endl;
+        while(true)
+        {
+            if (!cmdQueue->empty())
+            {
+                Instruction cmd = cmdQueue->front();
+                cout << cmd.getID() << endl;
+                cout << cmd.getAction() << endl;
+                cout << cmd.getDistance() << endl;
+                cout << cmd.getSpeed() << endl;
+                if ("ahead"== cmd.getAction())
+                {
+                car.moveForward(cmd.getDistance(), CarSpeed::slow);
+                } else
+                if ("back"== cmd.getAction())
+                {
+                car.moveBackward(cmd.getDistance(), CarSpeed::slow);
+                }
+                else
+                if ("left"== cmd.getAction())
+                {
+                car.turnLeft();
+                car.moveForward(cmd.getDistance(), CarSpeed::slow);
+                }
+                cmdQueue->pop();
+            }
+            usleep(100);
+        }
+    }
+
+
 }
+

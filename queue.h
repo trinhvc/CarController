@@ -1,6 +1,14 @@
 #pragma once
-#include<cstddef>
 #include "node.h"
+
+template<typename T>
+struct Node
+{
+    T data;
+    Node* next;
+};
+
+template<typename T>
 class Queue
 {
     private:
@@ -11,8 +19,7 @@ class Queue
         Queue();
         ~Queue();
         bool isEmpty();
-        void enqueue(string text);
-        string dequeue();
-        string peek();
+        void enqueue(const Instruction& instruction);
+        Instruction dequeue();
 };
 

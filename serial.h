@@ -11,6 +11,6 @@ class Serial
         Serial(char* device, int baudrate);
         ~Serial();
         int readByte();
-        string read();
+        void sendByte(int c);
         int getDataAvailable();
 };

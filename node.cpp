@@ -1,30 +1,35 @@
 #include "node.h"
+#include "instruction.h"
 
 Node::Node()
 {
+    _instruction = NULL;
+    _nextNode = NULL;
+}
+
+Node::Node(Instruction* instruction)
+{
+    _instruction = instruction;
     _nextNode = NULL;
 }
 
 Node::~Node()
 {
-    _text.clear();
+    if(_instruction!=NULL)
+    {
+        delete _instruction;
+    }
     _nextNode = NULL;
 }
 
-Node::Node(string text)
+void Node::setInstruction(Instruction* instruction)
 {
-    _text = text;
-    _nextNode = NULL;
+    _instruction = instruction;
 }
 
-void Node::setText(string text)
+Instruction* Node::getInstruction()
 {
-    _text = text;
-}
-
-string Node::getText()
-{
-    return _text;
+    return _instruction;
 }
 
 void Node::setNextNode(Node* node)

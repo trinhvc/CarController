@@ -23,16 +23,17 @@ Queue::~Queue()
 
 bool Queue::isEmpty()
 {
-    return _firstNode ==NULL;
+    return _firstNode == NULL;
 }
 
-void Queue::enqueue(string text)
+void Queue::enqueue(const Instruction &instruction)
 {
-    Node* node = new Node(text);
+    Instruction* newIns = new Instruction(instruction);
+    Node* node = new Node(newIns);
     /*
         if  queue is empty
         then firstnode, lastnode point to newnode
-        else update lastnode
+        else update lastnoded
     */
     if(_lastNode==NULL)
     {
@@ -46,9 +47,9 @@ void Queue::enqueue(string text)
     }
 }
 
-string Queue::dequeue()
+Instruction Queue::dequeue()
 {
-    string result;
+    Instruction result;
 
     if(_firstNode!=NULL)
     {
@@ -56,7 +57,7 @@ string Queue::dequeue()
         // store firstnode for later deleting
         Node *oldNode = _firstNode;
 
-        result = oldNode->getText();
+        result = *oldNode->getInstruction();
 
         // update first node
         _firstNode = _firstNode->getNextNode();
@@ -72,11 +73,5 @@ string Queue::dequeue()
 
     }
 
-    return result;
-}
-
-string Queue::peek()
-{
-    string result = _firstNode->getText();
     return result;
 }

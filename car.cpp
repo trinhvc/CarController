@@ -1,81 +1,133 @@
 #include "car.h"
+#include<unistd.h>
+Car::Car():
 
-Car::Car()
-{
-    _leftMotor  = new Motor(BRIDGE1_ENABLE, BRIDGE1_IN1, BRIDGE1_IN2);
-    _rightMotor = new Motor(BRIDGE2_ENABLE, BRIDGE2_IN1, BRIDGE2_IN2);
-}
+    _leftMotor(BRIDGE2_ENABLE, BRIDGE2_IN1, BRIDGE2_IN2),
+    _rightMotor(BRIDGE1_ENABLE, BRIDGE1_IN1, BRIDGE1_IN2),
+    _leftEncoder(ENCODER2),
+    _rightEncoder(ENCODER1)
+    {
 
-Car::~Car()
-{
-    delete _leftMotor;
-    delete _rightMotor;
 }
 
 void Car::turnLeft()
 {
-    _leftMotor ->forward(SPEED_1);
-    _rightMotor->forward(SPEED_2);
+        _leftMotor.setPWMFrequence(40);
+    _rightMotor.setPWMFrequence(25);
+    int goal = (80 * 40)/22;
+    int pulse = 0;
+    _rightEncoder.resetPulse();
+
+    _leftMotor.forward(30);
+    _rightMotor.forward(180);
+        while(pulse < goal)
+    {
+    pulse  = _rightEncoder.getPulse();
+    usleep(10);
+    }
+    stop(true);
 }
 
 void Car::turnRight()
 {
-    _leftMotor ->forward(SPEED_2);
-    _rightMotor->forward(SPEED_1);
-}
-
-void Car::rotateLeft()
-{
-    _leftMotor ->reverse(SPEED_1);
-    _rightMotor->forward(SPEED_1);
-}
-
-void Car::rotateRight()
-{
-    _leftMotor ->forward(SPEED_1);
-    _rightMotor->reverse(SPEED_1);
-}
-
-void Car::moveForward(CarSpeed speed)
-{
-    if(speed == Low)
-    {
-        _leftMotor ->forward(SPEED_1);
-        _rightMotor->forward(SPEED_1);
-    }
 
 }
 
-void Car::moveBackward(CarSpeed speed)
+void Car::rotateLeft(int degree)
 {
-    if(speed == Low)
+    //_rotate(true,_speed);
+}
+
+void Car::rotateRight(int degree)
+{
+    _rotate(false);
+}
+
+void Car::moveForward(int distance, CarSpeed speed)
+{
+    _leftMotor.setPWMFrequence(50);
+    _rightMotor.setPWMFrequence(50);
+    int goal = (distance * 40)/22;
+    int pulse = 0;
+    _leftEncoder.resetPulse();
+    _move(true,180);
+    while(pulse < goal)
     {
-        _leftMotor ->reverse(SPEED_1);
-        _rightMotor->reverse(SPEED_1);
+    pulse  = _leftEncoder.getPulse();
+    usleep(10);
     }
-    else if (speed == Medium)
+    stop(true);
+}
+
+
+void Car::moveBackward(int distance, CarSpeed speed)
+{
+    _leftMotor.setPWMFrequence(50);
+    _rightMotor.setPWMFrequence(50);
+    int goal = (distance * 40)/22;
+    int pulse = 0;
+    _leftEncoder.resetPulse();
+    _move(false,180);
+    while(pulse < goal)
     {
-        _leftMotor ->reverse(SPEED_2);
-        _rightMotor->reverse(SPEED_2);
+    pulse  = _leftEncoder.getPulse();
+    usleep(10);
     }
-    else if (speed == High)
-    {
-        _leftMotor ->reverse(SPEED_3);
-        _rightMotor->reverse(SPEED_3);
-    }
+    stop(true);
 }
 
 void Car::stop(bool force)
 {
     if (force)
     {
-        _leftMotor ->stop();
-        _rightMotor->stop();
+        _leftMotor .stop();
+        _rightMotor.stop();
     }
     else
     {
-        _leftMotor ->free();
-        _rightMotor->free();
+        _leftMotor.free();
+        _rightMotor.free();
     }
 }
 
+void Car::_move(bool ahead, int dutycycle)
+{
+    if (ahead)
+    {
+        _leftMotor.forward(dutycycle);
+        _rightMotor.forward(dutycycle);
+    }
+    else
+    {
+        _leftMotor.reverse(dutycycle);
+        _rightMotor.reverse(dutycycle);
+         }
+}
+
+void Car::_turn(bool left, int dutycycle)
+{
+    if (left)
+    {
+        _leftMotor.forward(dutycycle/2);
+        _rightMotor.forward(dutycycle);
+    }
+    else
+    {
+        _leftMotor.forward(dutycycle);
+        _rightMotor.forward(dutycycle/2);
+    }
+}
+
+void Car::_rotate(bool left)
+{
+    if (left)
+    {
+        //_leftMotor.reverse(dutycycle);
+        //_rightMotor.forward(dutycycle);
+    }
+    else
+    {
+        //_leftMotor.forward(dutycycle);
+        //_rightMotor.reverse(dutycycle);
+    }
+}

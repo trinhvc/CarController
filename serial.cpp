@@ -17,23 +17,12 @@ Serial::~Serial()
 int Serial::readByte()
 {
     int result = serReadByte(handle);
-    cout << "handle: " << handle << " char: " << result<< endl;
     return result;
 }
 
-string Serial::read()
+void Serial::sendByte(int c)
 {
-    string result;
-    char buffer[255];
-    int count = serRead(handle,buffer,255);
-    if (count > 0)
-    {
-        for(int i = 0; i< count; i++)
-        {
-            result += buffer[i];
-        }
-    }
-    return result;
+    serWriteByte(handle, c);
 }
 
 int Serial::getDataAvailable()
